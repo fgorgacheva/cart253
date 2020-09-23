@@ -5,5 +5,5 @@
 
 
 ##Known issues:
- *- Mouse must glide over canvas to make shapes appear *
- *- Some shapes take a few seconds to appear *
+ - *Mouse must glide over canvas to make shapes appear *
+ - *Some shapes take a few seconds to appear *
