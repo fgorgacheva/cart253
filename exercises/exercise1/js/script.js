@@ -22,17 +22,18 @@ let skwar = {
   fill: 0
 }
 
-// let tringl = {
-//   x1: 50,
-//   y1: 0,
-//   x2: 0,
-//   y2: 100,
-//   x3: 100,
-//   y3: 100,
-//   size: 100,
-//   speedX: 3,
-//   speedY: 4
-// }
+let ellps = {
+  x: 0,
+  y: 0,
+  w: 100,
+  h: 100,
+  size: 100,
+  speedX: 3,
+  speedY: 4,
+  fill: 0
+}
+
+
 
 // setup()
 //
@@ -47,12 +48,9 @@ function setup() {
   skwar.x = random(100,600);
   skwar.y = random(100,600);
 
-  // tringl.x1 = random(100,600);
-  // tringl.y1 = random(100,600);
-  // tringl.x2 = (tringl.x1 - 50);
-  // tringl.y2 = (tringl.x1 + 100);
-  // tringl.x3 = (tringl.x1 + 50);
-  // tringl.y3 = (tringl.x1 + 100);
+  ellps.x = random(100,600);
+  ellps.y = random(100,600);
+
 }
 
 // draw()
@@ -62,10 +60,13 @@ function draw() {
   background(255, 201, 201);
   noStroke();
 
+  let my = map(mouseY,0,height,0,255);
+  let mx = map(mouseX,0,width,0,255);
+
   // bol.x = constrain(bol.x, 0, width);
   // bol.fill = map(bol.x, 0, width, 0, 255);
 
-  // Drawing shapes and giving them movement =================================================================
+  //** CIRCLE ===========================================================================================
 
   //when bol hits any side of the canvas, reverse direction
   bol.speedX *= ((bol.x + bol.size/2 >= width || bol.x - bol.size/2 <= 0) ? -1 : 1);//+ bol.size/2
@@ -74,18 +75,18 @@ function draw() {
   bol.x = bol.x + bol.speedX;
   bol.y = bol.y + bol.speedY;
 
+  //make circle color change randomly based on mouse position on the canvas
+  fill(mx, my, 255);
 
-  let bmx;
-  bmx *= (((random(0,255)-mouseX) < 0) ? -1 : 1);
-  bmx = map(bmx,0,width,0,700);
-  let bmy;
-  bmy *= (((random(0,255)-mouseY) < 0) ? -1 : 1);
-  bmy = map(bmy,0,height,0,700);
+  //make the circle size change based on mouse position within the canvas
+  //bol.size = constrain(mouseX,0,500);
 
-  fill(bmx, bmy, random(0,255));
-  bol.size = constrain(mouseX,0,600);
+  //draw the circle
   circle(bol.x, bol.y, bol.size);
 
+
+
+  //** SQUARE ===========================================================================================
 
   //when skwar hits any side of the canvas, reverse direction
   skwar.speedX *= ((skwar.x + skwar.size > width || skwar.x < 0) ? -1 : 1);
@@ -94,46 +95,33 @@ function draw() {
   skwar.x = skwar.x + skwar.speedX;
   skwar.y = skwar.y + skwar.speedY;
 
-  fill(mouseY, mouseX, random(0,255));
+  fill(my, 255, mx);
+
+  //skwar.size = constrain(mouseY,0,500)
+
   square(skwar.x, skwar.y, skwar.size);
 
-  //when tringl hits any side of the canvas, reverse direction
-  // rectMode(CENTER);
-  // tringl.speedX *= ((tringl.x + tringl.size > width || tringl.x < 0) ? -1 : 1);
-  // tringl.speedY *= ((tringl.y + tringl.size > height || tringl.y < 0) ? -1 : 1);
-  //
-  // tringl.x = tringl.x + tringl.speedX;
-  // tringl.y = tringl.y + tringl.speedY;
 
-  // let triangleArr = [
-  //   [tringl.x1, tringl.y1],
-  //   [tringl.x2, tringl.y2],
-  //   [tringl.x3, tringl.y3]
-  // ]
-  //
-  // for(var i = 0; i < triangleArr.length(); i++){
-  //   for(var j = 0; j < triangleArr[i].length(); j++){
-  //     tringl.speedX *= ((triangleArr[i] + tringl.size > width || triangleArr[i] < 0) ? -1 : 1);
-  //     tringl.speedY *= ((triangleArr[j] + tringl.size > height || triangleArr[j] < 0) ? -1 : 1);
-  //
-  //     triangleArr[i] = triangleArr[i] + tringl.speedX;
-  //     triangleArr[j] = triangleArr[j] + tringl.speedY;
-  //   }
-  // }
-  //
-  // fill('purple');
-  // triangle(tringl.x1, tringl.y1, tringl.x2, tringl.y2, tringl.x3, tringl.y3);
+  //** ELLIPSE ===========================================================================================
+
+  //when ellps hits any side of the canvas, reverse direction
+  ellps.speedX *= ((ellps.x + ellps.size > width || ellps.x < 0) ? -1 : 1);
+  ellps.speedY *= ((ellps.y + ellps.size > height || ellps.y < 0) ? -1 : 1);
+
+  ellps.x = ellps.x + ellps.speedX;
+  ellps.y = ellps.y + ellps.speedY;
+
+  fill(255, my, mx);
+
+  //skwar.size = constrain(mouseY,0,500)
+
+  ellipse(ellps.x, ellps.y, ellps.w, ellps.h);
 
 
 
 
 
-  //Making the shapes change color relative to mouse position ================================================
 
-
-
-
-  //
 
 }
 
