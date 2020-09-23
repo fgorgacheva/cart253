@@ -4,6 +4,6 @@
 2. Link to the project: https://fgorgacheva.github.io/cart253/exercises/exercise1/
 
 
-##*Known issues:*
+*##Known issues:*
  - Mouse must glide over canvas to make shapes appear 
  - Some shapes take a few seconds to appear 
