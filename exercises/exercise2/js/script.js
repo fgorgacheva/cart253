@@ -7,15 +7,15 @@ Here is a description of this template p5 project.
 
 let covid19 = {
   x: 0,
-  y: 0,
-  size: 100,
+  y: 250,
+  size: 200,
   vx: 2,
   vy: 3,
   distanceX: 0,
   distanceY: 0,
   targetX: 0,
   targetY: 0,
-  ease: 0.02
+  ease: 0.015
 }
 
 let user = {
@@ -36,12 +36,14 @@ let house = {
 let bgImg;
 let covidImg;
 let houseImg;
+let endHouseImg;
 let endImg;
 
 function preload() {
   bgImg = loadImage('assets/images/background.png');
   covidImg = loadImage('assets/images/covid19s.png');
   houseImg = loadImage('assets/images/house.png');
+  endHouseImg = loadImage('assets/images/endHouse.png');
   endImg = loadImage('assets/images/stop.png');
 }
 
@@ -83,32 +85,52 @@ function draw() {
   }
 
   //place house
-  texture(houseImg);
-  square(house.x, house.y, house.size);
+  image(houseImg, house.x, house.y, house.size);
 
   //user movement
   user.x = mouseX;
   user.y = mouseY;
 
+
+//==================================================================ERROR=======
   //check if user got covid19
   let distance = dist(user.x, user.y, covid19.x, covid19.y);
   if(distance < user.size/2 + covid19.size/2){
+    background(endImg);
+    image(endHouseImg, house.x, house.y, house.size);
     noLoop();
   }
-
+  //============================================================================
+  //================================================================ERROR=======
   //if covid touches house, bounce away
-  covid19.vx *= ((covid19.x + covid19.size/2 >= house.x) ? -1 : 1);
-  covid19.vy *= ((covid19.y - covid19.size/2 <= house.y) ? -1 : 1);
+  // covid19.vx *= ((covid19.x < 450) ? -1 : 1);
+  // covid19.vy *= ((covid19.y < windowHeight - 450) ? -1 : 1);
+  //
+  // covid19.x = covid19.x + covid19.speedX;
+  // covid19.y = covid19.y + covid19.speedY;
 
-  covid19.x = covid19.x + covid19.vx;
-  covid19.y = covid19.y + covid19.vy;
+//============================================================================
+
 
   //display covid 19 circle
-  fill(255,0,0);
-  ellipse(covid19.x, covid19.y, covid19.size);
+  image(covidImg, covid19.x, covid19.y, covid19.size, covid19.size);
 
   //display user
-  fill(0,255,0);
+  //if distance between user and virus is less than half the screen start becoming red
+  let lvlw = (windowWidth  - 50) / 3;
+  let lvlh = (windowHeight - 50) / 3;
+
+  //uses changes color based on distance of the virus to represent danger
+  if(distance <= lvlw && distance <= lvlh){
+    fill('red');
+  }
+  else if(distance <= lvlw*2 && distance <= lvlh*2){
+    fill('yellow');
+  }
+  else if(distance > lvlw*2 && distance > lvlh*2 ){
+    fill('green');
+  }
+
   ellipse(user.x, user.y, user.size);
 
 }
