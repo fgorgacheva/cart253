@@ -61,10 +61,9 @@ function setup() {
   //noCursor();
 
   gameOver = false;
-  inHouse = false;
 
-  covid19.x = random(50, windowWidth - 50);
-  covid19.y = random(50, windowHeight - 50);
+  covid19.x = windowWidth;
+  covid19.y = windowHeight;
 
   house.y = windowHeight - 450;
 
@@ -77,15 +76,26 @@ function setup() {
 // Description of draw() goes here.
 function draw() {
   background(bgImg);
+  inHouse = false;
+
+  covid19.targetX = mouseX;
+  covid19.distanceX = covid19.targetX - covid19.x;
+  covid19.targetY = mouseY;
+  covid19.distanceY = covid19.targetY - covid19.y;
+  // Check if user in house
+  if(covid19.x + covid19.distanceX * covid19.ease <= house.x + house.size
+    && covid19.y + covid19.distanceY * covid19.ease + covid19.size /2 >= house.y){
+    inHouse = true;
+  } else {
+    inHouse = false;
+  }
 
   // covid19 movement -> it follows the user
   if (!inHouse) {
-    covid19.targetX = mouseX;
-    covid19.distanceX = covid19.targetX - covid19.x;
+
     covid19.x += covid19.distanceX * covid19.ease;
 
-    covid19.targetY = mouseY;
-    covid19.distanceY = covid19.targetY - covid19.y;
+
     covid19.y += covid19.distanceY * covid19.ease;
   }
 
@@ -113,15 +123,6 @@ function draw() {
     imageMode(CORNER);
     image(endHouseImg, house.x, house.y, house.size);
     noLoop();
-  }
-
-  // Check if user in house
-  if(covid19.x <= 450 && covid19.y >= 530){
-    inHouse = true;
-    covid19.x = constrain(covid19.x, house.x + house.size, windowWidth);
-    covid19.y = constrain(covid19.y, 0, house.y - 100);
-  } else {
-    inHouse = false;
   }
 
   //display covid 19 circle
