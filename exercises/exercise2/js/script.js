@@ -104,7 +104,7 @@ function draw() {
   //check if user got covid19
   let distance = dist(user.x, user.y, covid19.x, covid19.y);
 
-  //stop the program
+  //if virus touches user, stop the program
   if (distance < user.size / 2 + covid19.size / 2) {
     gameOver = true;
     background(endImg);
@@ -115,14 +115,12 @@ function draw() {
     noLoop();
   }
 
-  // check if user in house
-  let socialDistance = dist(user.x, user.y, house.x, house.y);
-  let distanceCovid = dist(covid19.x, covid19.y, house.x, house.y);
-
-  if (socialDistance < 450 && (distanceCovid <= 450 )) {
+  // Check if user in house
+  if(covid19.x <= 450 && covid19.y >= 530){
     inHouse = true;
-  }
-  else {
+    covid19.x = constrain(covid19.x, house.x + house.size, windowWidth);
+    covid19.y = constrain(covid19.y, 0, house.y - 100);
+  } else {
     inHouse = false;
   }
 
@@ -137,17 +135,13 @@ function draw() {
   let lvlh = (windowHeight - 50) / 4;
 
   //uses changes color based on distance of the virus to represent danger
-  if(inHouse){
+  if (user.x < 450 && user.y > 530) {
     fill('lime');
-    circle(user.x, user.y, user.size);
-  }
-  else if (distance <= lvlw && distance <= lvlh) {
+  } else if (distance <= lvlw && distance <= lvlh) {
     fill('red');
-  }
-  else if (distance <= lvlw * 2 && distance <= lvlh * 2) {
+  } else if (distance <= lvlw * 2 && distance <= lvlh * 2) {
     fill('yellow');
-  }
-  else if (distance > lvlw * 2 && distance > lvlh * 2) {
+  } else if (distance > lvlw * 2 && distance > lvlh * 2) {
     fill('lime');
   }
 
