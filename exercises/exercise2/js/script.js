@@ -34,14 +34,19 @@ let house = {
 }
 
 let bgImg;
-let covidImg;
+let virus;
+let victim;
 let houseImg;
 let endHouseImg;
 let endImg;
 
+let gameOver;
+let inHouse;
+
 function preload() {
   bgImg = loadImage('assets/images/background.png');
-  covidImg = loadImage('assets/images/covid19s.png');
+  virus = loadImage('assets/images/covid19h.png');
+  victim = loadImage('assets/images/covid19s.png');
   houseImg = loadImage('assets/images/house.png');
   endHouseImg = loadImage('assets/images/endHouse.png');
   endImg = loadImage('assets/images/stop.png');
@@ -55,10 +60,13 @@ function setup() {
   noStroke();
   //noCursor();
 
-  covid19.x = random(50, windowWidth-50);
-  covid19.y = random(50, windowHeight-50);
+  gameOver = false;
+  inHouse = false;
 
-  house.y = windowHeight-450;
+  covid19.x = random(50, windowWidth - 50);
+  covid19.y = random(50, windowHeight - 50);
+
+  house.y = windowHeight - 450;
 
   image(bgImg, 0, 0);
 
@@ -71,15 +79,17 @@ function draw() {
   background(bgImg);
 
   // covid19 movement -> it follows the user
-  covid19.targetX = mouseX;
-  covid19.distanceX = covid19.targetX - covid19.x;
-  covid19.x += covid19.distanceX * covid19.ease;
+  if (!inHouse) {
+    covid19.targetX = mouseX;
+    covid19.distanceX = covid19.targetX - covid19.x;
+    covid19.x += covid19.distanceX * covid19.ease;
 
-  covid19.targetY = mouseY;
-  covid19.distanceY = covid19.targetY - covid19.y;
-  covid19.y += covid19.distanceY * covid19.ease;
+    covid19.targetY = mouseY;
+    covid19.distanceY = covid19.targetY - covid19.y;
+    covid19.y += covid19.distanceY * covid19.ease;
+  }
 
-  if(covid19.x > width){
+  if (covid19.x > width) {
     covid19.x = random(0, height);
     covid19.y = random(0, height);
   }
@@ -91,46 +101,58 @@ function draw() {
   user.x = mouseX;
   user.y = mouseY;
 
-
-//==================================================================ERROR=======
   //check if user got covid19
   let distance = dist(user.x, user.y, covid19.x, covid19.y);
-  if(distance < user.size/2 + covid19.size/2){
+
+  //stop the program
+  if (distance < user.size / 2 + covid19.size / 2) {
+    gameOver = true;
     background(endImg);
+    imageMode(CENTER);
+    image(victim, user.x, user.y, 200, 200);
+    imageMode(CORNER);
     image(endHouseImg, house.x, house.y, house.size);
     noLoop();
   }
-  //============================================================================
-  //================================================================ERROR=======
-  //if covid touches house, bounce away
-  // covid19.vx *= ((covid19.x < 450) ? -1 : 1);
-  // covid19.vy *= ((covid19.y < windowHeight - 450) ? -1 : 1);
-  //
-  // covid19.x = covid19.x + covid19.speedX;
-  // covid19.y = covid19.y + covid19.speedY;
 
-//============================================================================
+  // check if user in house
+  let socialDistance = dist(user.x, user.y, house.x, house.y);
+  let distanceCovid = dist(covid19.x, covid19.y, house.x, house.y);
 
+  if (socialDistance < 450 && (distanceCovid <= 450 )) {
+    inHouse = true;
+  }
+  else {
+    inHouse = false;
+  }
 
   //display covid 19 circle
-  image(covidImg, covid19.x, covid19.y, covid19.size, covid19.size);
+  imageMode(CENTER);
+  image(virus, covid19.x, covid19.y, covid19.size, covid19.size);
+  imageMode(CORNER);
 
   //display user
   //if distance between user and virus is less than half the screen start becoming red
-  let lvlw = (windowWidth  - 50) / 3;
-  let lvlh = (windowHeight - 50) / 3;
+  let lvlw = (windowWidth - 50) / 4;
+  let lvlh = (windowHeight - 50) / 4;
 
   //uses changes color based on distance of the virus to represent danger
-  if(distance <= lvlw && distance <= lvlh){
+  if(inHouse){
+    fill('lime');
+    circle(user.x, user.y, user.size);
+  }
+  else if (distance <= lvlw && distance <= lvlh) {
     fill('red');
   }
-  else if(distance <= lvlw*2 && distance <= lvlh*2){
+  else if (distance <= lvlw * 2 && distance <= lvlh * 2) {
     fill('yellow');
   }
-  else if(distance > lvlw*2 && distance > lvlh*2 ){
-    fill('green');
+  else if (distance > lvlw * 2 && distance > lvlh * 2) {
+    fill('lime');
   }
 
-  ellipse(user.x, user.y, user.size);
+  if (!gameOver) {
+    ellipse(user.x, user.y, user.size);
+  }
 
 }
