@@ -58,13 +58,15 @@ function preload() {
 function setup() {
   createCanvas(windowWidth, windowHeight);
   noStroke();
-  //noCursor();
+  noCursor();
 
   gameOver = false;
 
+  //virus spawn position
   covid19.x = windowWidth;
   covid19.y = windowHeight;
 
+  //house spawn position
   house.y = windowHeight - 450;
 
   image(bgImg, 0, 0);
@@ -82,7 +84,8 @@ function draw() {
   covid19.distanceX = covid19.targetX - covid19.x;
   covid19.targetY = mouseY;
   covid19.distanceY = covid19.targetY - covid19.y;
-  // Check if user in house
+  // checking if next x,y coordinates of covid will/will not collide with the house
+  //if it does, then make its following behavior stop
   if(covid19.x + covid19.distanceX * covid19.ease <= house.x + house.size
     && covid19.y + covid19.distanceY * covid19.ease + covid19.size /2 >= house.y){
     inHouse = true;
@@ -90,21 +93,13 @@ function draw() {
     inHouse = false;
   }
 
-  // covid19 movement -> it follows the user
+  // covid19 movement -> it follows the user cursor
   if (!inHouse) {
-
     covid19.x += covid19.distanceX * covid19.ease;
-
-
     covid19.y += covid19.distanceY * covid19.ease;
   }
 
-  if (covid19.x > width) {
-    covid19.x = random(0, height);
-    covid19.y = random(0, height);
-  }
-
-  //place house
+  //spawn house
   image(houseImg, house.x, house.y, house.size);
 
   //user movement
@@ -131,11 +126,11 @@ function draw() {
   imageMode(CORNER);
 
   //display user
-  //if distance between user and virus is less than half the screen start becoming red
+  //different levels (closeness to the virus)
   let lvlw = (windowWidth - 50) / 4;
   let lvlh = (windowHeight - 50) / 4;
 
-  //uses changes color based on distance of the virus to represent danger
+  //user changes color based on distance of the virus to represent danger
   if (user.x < 450 && user.y > 530) {
     fill('lime');
   } else if (distance <= lvlw && distance <= lvlh) {
@@ -146,6 +141,7 @@ function draw() {
     fill('lime');
   }
 
+  // draw the user's circle if the game is still going
   if (!gameOver) {
     ellipse(user.x, user.y, user.size);
   }
