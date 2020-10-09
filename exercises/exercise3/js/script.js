@@ -47,6 +47,7 @@ let happyEndSound;
 let sadEndSound;
 
 let gameOver;
+let startGame;
 
 function preload() {
   batmanImg = loadImage('assets/images/bruce.png');
@@ -81,6 +82,7 @@ function setup() {
   warehouse.y = windowHeight-200;
 
   gameOver = false;
+  startGame = false;
 
 }
 
@@ -88,12 +90,17 @@ function setup() {
 //
 // Description of draw() goes here.
 function draw() {
-  title();
 
-  function mouseClicked(){
-    loadGame();
+  if(mouseIsPressed){
+    startGame = true;
   }
 
+  if(!startGame){
+    title();
+  }
+  else {
+    loadGame();
+  }
 }
 
 //defines batmans behavior
@@ -129,14 +136,16 @@ function title(){
   textSize(20);
   textAlign(LEFT);
   text('- CONTEXT: Jason Todd was one of the famous Robins. He was kidnapped and killed by the Joker in a warehouse explosion.', 250, 250);
-  text('- RULES: Make Bruce and Jason\'s paths cross for them to become Batman anad Robin. If either of them leave the screen, they go their spearate ways.', 250, 350);
-  text('Place Jason over the warehouse for a guest appearance', 340, 400);
-  text('**DISCLAIMER: There are sound effects and they may be very loud. Please lower your volume before playing.', 250, 500);
+  text('- RULES: Make Bruce and Jason\'s paths cross for them to become Batman and Robin.', 250, 350);
+  text('If either of them leave the screen, they go their spearate ways.', 340, 400);
+  text('Place Jason over the warehouse for a surprise guest appearance.', 340, 450);
+  text('Refresh the page to restart the game.', 340, 500);
+  text('**DISCLAIMER: There are sound effects and they may be very loud. Please lower your volume before playing.', 250, 600);
 
   fill('red');
   textSize(50);
   textAlign(CENTER);
-  text('Click Anywhere to Play!', windowWidth/2, 700);
+  text('Click HERE to play!', windowWidth/2, 850);
 }
 
 //load game
