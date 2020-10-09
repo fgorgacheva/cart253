@@ -42,6 +42,8 @@ let warehouseImg;
 let deathImg;
 let arkhamImg;
 
+let jokerSound;
+
 let gameOver;
 
 function preload() {
@@ -53,6 +55,9 @@ function preload() {
   warehouseImg = loadImage('assets/images/warehouse.png');
   deathImg = loadImage('assets/images/easteregg.png');
   arkhamImg = loadImage('assets/images/arkhamcity.jpg');
+
+  soundFormats('mp3');
+  jokerSound = loadSound('assets/sounds/joker easter egg.mp3');
 }
 
 // setup()
@@ -95,6 +100,10 @@ function draw() {
      sadness();
   }
 
+  if(isRobinKidnapped()){
+    easterEgg();
+  }
+
   //clear the screen of stuff when the game is over
   if(!gameOver){
     //spawn warehouse easter egg
@@ -113,12 +122,7 @@ function draw() {
     imageMode(CENTER);
     image(robinImg, robin.x, robin.y, robin.size, robin.size);
     imageMode(CORNER);
-
-    if(isRobinKidnapped()){
-      console.log("yay");
-    }
   }
-
 }
 
 
@@ -168,9 +172,11 @@ function sadness() {
 }
 
 function easterEgg(){
+  jokerSound.play();
   gameOver = true;
   imageMode(CENTER);
   image(jokerImg, windowWidth/2, windowHeight/2, 800,800);
+  image(deathImg, warehouse.x, warehouse.y, 500, warehouse.size);
   imageMode(CORNER);
   noLoop();
 }
