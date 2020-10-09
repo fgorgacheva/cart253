@@ -103,26 +103,6 @@ function draw() {
   }
 }
 
-//defines batmans behavior
-function batmanDraw(){
-batman.tx = batman.tx + 0.025;
-batman.ty = batman.ty + 0.025;
-
-let noiseX = noise(batman.tx);
-let noiseY = noise(batman.ty);
-
-batman.vx = map(noiseX, 0, 1, - batman.speed, batman.speed);
-batman.vy = map(noiseY, 0, 1, - batman.speed, batman.speed);
-
-batman.x = batman.x + batman.vx;
-batman.y = batman.y + batman.vy;
-
-imageMode(CENTER);
-image(batmanImg, batman.x, batman.y, batman.size, batman.size);
-imageMode(CORNER);
-}
-
-
 //display a title screen
 function title(){
   background('black');
@@ -154,16 +134,15 @@ function loadGame(){
 
   //check if jason met bruce
   let distance = dist(robin.x, robin.y, batman.x, batman.y);
-
-  //if jason meets bruce, display happy ending
+  //if jason meets bruce, load happy ending
   if (distance < robin.size / 2 + batman.size / 2) {
     happiness();
   }
-  //if batman or robin yeeted off the screen display sad ending
+  //if bruce or jason yeet off the canvas display sad ending
   if(wentSeparateWays(robin) || wentSeparateWays(batman)) {
      sadness();
   }
-
+  //if jason is taken to the warehouse, load easter egg
   if(isRobinKidnapped()){
     easterEgg();
   }
@@ -187,6 +166,25 @@ function loadGame(){
     image(robinImg, robin.x, robin.y, robin.size, robin.size);
     imageMode(CORNER);
   }
+}
+
+//defines batmans behavior
+function batmanDraw(){
+batman.tx = batman.tx + 0.025;
+batman.ty = batman.ty + 0.025;
+
+let noiseX = noise(batman.tx);
+let noiseY = noise(batman.ty);
+
+batman.vx = map(noiseX, 0, 1, - batman.speed, batman.speed);
+batman.vy = map(noiseY, 0, 1, - batman.speed, batman.speed);
+
+batman.x = batman.x + batman.vx;
+batman.y = batman.y + batman.vy;
+
+imageMode(CENTER);
+image(batmanImg, batman.x, batman.y, batman.size, batman.size);
+imageMode(CORNER);
 }
 
 //end the program and display happy outcome image
