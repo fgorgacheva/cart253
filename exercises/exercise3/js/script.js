@@ -170,21 +170,22 @@ function loadGame(){
 
 //defines batmans behavior
 function batmanDraw(){
-batman.tx = batman.tx + 0.025;
-batman.ty = batman.ty + 0.025;
+  //pippin example of perlin noise movement modified to work with this code
+  batman.tx = batman.tx + 0.025;
+  batman.ty = batman.ty + 0.025;
 
-let noiseX = noise(batman.tx);
-let noiseY = noise(batman.ty);
+  let noiseX = noise(batman.tx);
+  let noiseY = noise(batman.ty);
 
-batman.vx = map(noiseX, 0, 1, - batman.speed, batman.speed);
-batman.vy = map(noiseY, 0, 1, - batman.speed, batman.speed);
+  batman.vx = map(noiseX, 0, 1, - batman.speed, batman.speed);
+  batman.vy = map(noiseY, 0, 1, - batman.speed, batman.speed);
 
-batman.x = batman.x + batman.vx;
-batman.y = batman.y + batman.vy;
+  batman.x = batman.x + batman.vx;
+  batman.y = batman.y + batman.vy;
 
-imageMode(CENTER);
-image(batmanImg, batman.x, batman.y, batman.size, batman.size);
-imageMode(CORNER);
+  imageMode(CENTER);
+  image(batmanImg, batman.x, batman.y, batman.size, batman.size);
+  imageMode(CORNER);
 }
 
 //end the program and display happy outcome image
