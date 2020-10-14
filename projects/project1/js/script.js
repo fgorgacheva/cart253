@@ -22,12 +22,14 @@ let aliens = {
 }
 
 let galaxy = {
+  name: "galaxy",
   x: 250,
   y: 250,
   width: 400,
   height: 400,
   rotationSpeed: 0.008,
-  rotation: 0
+  rotation: 0,
+  collision: false
 }
 
 let blackHole = {
@@ -36,7 +38,8 @@ let blackHole = {
   width: 300,
   height: 300,
   rotationSpeed: 0.02,
-  rotation: 0
+  rotation: 0,
+  collision: false
 }
 
 let nebula = {
@@ -45,7 +48,8 @@ let nebula = {
   width: 300,
   height: 300,
   rotationSpeed: 0.001,
-  rotation: 0
+  rotation: 0,
+  collision: false
 }
 
 let pulsar = {
@@ -54,7 +58,8 @@ let pulsar = {
   width: 400,
   height: 240,
   rotationSpeed: 0.05,
-  rotation: 0
+  rotation: 0,
+  collision: false
 }
 
 let sun = {
@@ -63,7 +68,8 @@ let sun = {
   width: 50,
   height: 50,
   rotationSpeed: 0.008,
-  rotation: 0
+  rotation: 0,
+  collision: false
 }
 
 
@@ -84,6 +90,8 @@ let gameThemeSound;
 let alienSound;
 
 let rotationVar = 0;
+let objectArray;
+let imageArray;
 
 function preload() {
   userImg        = loadImage('assets/images/spaceship.png');
@@ -114,6 +122,9 @@ function setup() {
 
   user.x = windowWidth/2;
   user.y = windowHeight/2;
+
+  objectArray = [galaxy,    blackHole,    nebula,    pulsar];
+  imageArray  = [galaxyImg, blackHoleImg, nebulaImg, pulsarImg];
 }
 
 // draw()
@@ -132,24 +143,14 @@ function title() {
 function game() {
   background(spaceImg);
 
+  // objectArray.forEach((object, i) => {
+  //   displayInformation(imageArray[i], object);
+  // });
 
-
-
-
-
-  //place Galaxy and make it turn
-  cosmicRotation(galaxyImg, galaxy);
-
-  //place Nebula and make it turn
-  cosmicRotation(nebulaImg, nebula);
-
-  //place black hole and make it turn
-  cosmicRotation(blackHoleImg, blackHole);
-
-  //place Pular and make it turn
-  cosmicRotation(pulsarImg, pulsar);
-
-
+  //Place, draw, and rotate every cosmic object
+  objectArray.forEach((object, i) => {
+    cosmicRotation(imageArray[i], object);
+  });
 
 
 
@@ -179,17 +180,44 @@ function drawImage(img, x, y, w, h){
 function cosmicRotation(img, object){
   object.rotation += object.rotationSpeed;
   push();
-  translate(object.x, object.y);
-  rotate(object.rotation);
-  drawImage(img, 0, 0, object.width, object.height);
-  if(object === galaxy){
-    drawImage(sunImg, 100, 100, sun.width, sun.height);
+  if(checkCollision(object)){
+    translate(object.x, object.y);
+    rotate(object.rotation);
+    drawImage(img, 0, 0, object.width * 1.2, object.height * 1.2);
+    if(object.name === "galaxy"){
+
+      drawImage(sunImg, 100, 100, sun.width * 1.1, sun.height * 1.1);
+    }
+    pop();
   }
-  pop();
+  else {
+    translate(object.x, object.y);
+    rotate(object.rotation);
+    drawImage(img, 0, 0, object.width, object.height);
+    if(object.name === "galaxy"){
+      drawImage(sunImg, 100, 100, sun.width, sun.height);
+    }
+    pop();
+  }
 }
 
-function isCollision(user, object){
+//check if the user is hovering over a cosmic object
+function checkCollision(object){
+ 
+  if(user.x + user.size/2 < object.x + object.width/2 && user.x - user.size /2 > object.x - object.width/2 &&
+     user.y + user.size/2 < object.y + object.height/2 && user.y - user.size /2 > object.y - object.height/2){
+        object.collision = true;
+        return true;
+  }
+  else {
+    object.collision = false;
+    return false;
+  }
+}
 
+
+//display object information pannel
+function displayInformation(img, object){
 
 }
 
