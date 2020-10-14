@@ -47,6 +47,8 @@ let blackHoleImg;
 let nebulaImg;
 let pulsarImg;
 let sunImg;
+let solarSystemImg;
+let spaceImg;
 
 let engineStartSound;
 let engineOffSound;
@@ -54,6 +56,22 @@ let gameThemeSound;
 let alienSound;
 
 function preload() {
+  userImg        = loadImage('assets/images/spaceship.png');
+  alienImg       = loadImage('assets/images/alienboi.png');
+  alienShipImg   = loadImage('assets/images/alienship.png');
+  galaxyImg      = loadImage('assets/images/galaxy.png');
+  blackHoleImg   = loadImage('assets/images/blackhole.png');
+  nebulaImg      = loadImage('assets/images/nebula.png');
+  pulsarImg      = loadImage('assets/images/pulsar.png');
+  sunImg         = loadImage('assets/images/sun.png');
+  solarSystemImg = loadImage('assets/images/solar system.jpg');
+  spaceImg       = loadImage('assets/images/background.jpg');
+
+  soundFormats('mp3');
+  engineStartSound = loadSound('assets/sounds/banshee on.mp3');
+  engineOffSound   = loadSound('assets/sounds/banshee off.mp3');
+  gameThemeSound   = loadSound('assets/sounds/Hans Zimmer - No Time For Caution.mp3');
+  alienSound       = loadSound('assets/sounds/xFiles.mp3');
 
 }
 
