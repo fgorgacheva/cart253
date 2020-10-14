@@ -11,14 +11,19 @@ If you come in contact with the aliens, they will give you a choice
 **************************************************/
 
 let user = {
-  x: 250,
-  y: 250,
+  x: 0,
+  y: 0,
   size: 100,
   ease: 0.08
 }
 
-let aliens = {
-
+let alienShip = {
+  x: 0,
+  y: 0,
+  vx: 0,
+  vy: 0,
+  size: 100,
+  speed: 5
 }
 
 let galaxy = {
@@ -76,9 +81,10 @@ let sun = {
   collision: false
 }
 
-
 let userImg;
-let alienImg;
+let alienBoiImg;
+let alienBoiGoodImg;
+let alienBoiBadImg;
 let alienShipImg;
 let galaxyImg;
 let blackHoleImg;
@@ -91,29 +97,34 @@ let spaceImg;
 let engineStartSound;
 let engineOffSound;
 let gameThemeSound;
-let alienSound;
+let alienThemeSound;
 
 let rotationVar = 0;
 let objectArray;
 let imageArray;
+let isAlienShipAppear;
+let hasSoundPlayed = false;
+let gameState = 0;
 
 function preload() {
-  userImg        = loadImage('assets/images/spaceship.png');
-  alienImg       = loadImage('assets/images/alienboi.png');
-  alienShipImg   = loadImage('assets/images/alienship.png');
-  galaxyImg      = loadImage('assets/images/galaxy.png');
-  blackHoleImg   = loadImage('assets/images/blackhole.png');
-  nebulaImg      = loadImage('assets/images/nebula.png');
-  pulsarImg      = loadImage('assets/images/pulsar.png');
-  sunImg         = loadImage('assets/images/sun.png');
-  solarSystemImg = loadImage('assets/images/solar system.jpg');
-  spaceImg       = loadImage('assets/images/background.jpg');
+  userImg         = loadImage('assets/images/spaceship.png');
+  alienBoiImg     = loadImage('assets/images/alienboi unhappy.png');
+  alienBoiGoodImg = loadImage('assets/images/alienboi good.png');
+  alienBoiBadImg  = loadImage('assets/images/alienboi bad.png');
+  alienShipImg    = loadImage('assets/images/alienship.png');
+  galaxyImg       = loadImage('assets/images/galaxy.png');
+  blackHoleImg    = loadImage('assets/images/blackhole.png');
+  nebulaImg       = loadImage('assets/images/nebula.png');
+  pulsarImg       = loadImage('assets/images/pulsar.png');
+  sunImg          = loadImage('assets/images/sun.png');
+  solarSystemImg  = loadImage('assets/images/solar system.jpg');
+  spaceImg        = loadImage('assets/images/background.jpg');
 
   soundFormats('mp3');
   engineStartSound = loadSound('assets/sounds/banshee on.mp3');
   engineOffSound   = loadSound('assets/sounds/banshee off.mp3');
   gameThemeSound   = loadSound('assets/sounds/Hans Zimmer - No Time For Caution.mp3');
-  alienSound       = loadSound('assets/sounds/xFiles.mp3');
+  alienThemeSound  = loadSound('assets/sounds/xFiles.mp3');
 }
 
 // setup()
@@ -123,7 +134,12 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   noStroke();
   //noCursor();
-
+  setInterval(() => {
+    isAlienShipAppear = true;
+    alienShip.x = 0 - alienShip.size;
+    alienShip.y = random(0, windowHeight);
+    alienShip.vx = alienShip.speed;
+  }, 10 * 1000);
   user.x = windowWidth/2;
   user.y = windowHeight/2;
 
@@ -134,20 +150,46 @@ function setup() {
   gameThemeSound.loop();
 }
 
+
 // draw()
 //
 // Description of draw() goes here.
 function draw() {
-  game();
+  background(spaceImg);
+  switch(gameState){
+    case 0: //title screen
+      title();
+      break;
+
+    case 1: //normal game state/launch
+      game();
+      break;
+
+    case 2: //alien interception
+      alienOptionDialog();
+      break;
+
+    case 3: //continue game
+      continueExploration();
+      break;
+
+    case 4: //game over
+      gameOver();
+      break;
+  }
+
 }
 
 function title() {
-
+  gameState = 1;
 }
 
+
+//===================================================================================================================================
+// overall game logic
+//===================================================================================================================================
 function game() {
   background(spaceImg);
-
   displayMovingStars();
 
   //Place, draw, and rotate every cosmic object
@@ -155,10 +197,24 @@ function game() {
     cosmicRotation(imageArray[i], object);
   });
 
+  //check if it is time to spawn the alien ship and call its behavior
+  if(isAlienShipAppear){
+    alienShipBehavior();
+  }
+
+  //check to see if the alien ship has been intercepted, if it has launch the next game state
+  let distance = dist(user.x, user.y, alienShip.x, alienShip.y);
+  if (distance < user.size / 2 + alienShip.size / 2) {
+    //alien interception
+    gameState = 2;
+  }
+
   userBehavior();
 }
 
+//===================================================================================================================================
 //defines the user movement behavior
+//===================================================================================================================================
 function userBehavior() {
   let targetX = mouseX;
   let dx = targetX - user.x;
@@ -171,13 +227,18 @@ function userBehavior() {
   drawImage(userImg, user.x, user.y, user.size, user.size);
 }
 
-//this will draw an image at the center coordinates rather than the corner, and put it back to corner right after
+//===================================================================================================================================
+// this will draw an image from its center coordinates rather than the corner, and put it back to corner right after
+//===================================================================================================================================
 function drawImage(img, x, y, w, h){
   imageMode(CENTER);
   image(img, x, y, w, h);
   imageMode(CORNER);
 }
 
+//===================================================================================================================================
+// draws the celestial objects and defines their rotating behavior
+//===================================================================================================================================
 function cosmicRotation(img, object){
   object.rotation += object.rotationSpeed;
   push();
@@ -202,7 +263,10 @@ function cosmicRotation(img, object){
   }
 }
 
-//check if the user is hovering over a cosmic object
+
+//===================================================================================================================================
+//check if the user is hovering over a celestial object
+//===================================================================================================================================
 function checkCollision(object){
   if(user.x + user.size/2 < object.x + object.width/2 && user.x - user.size /2 > object.x - object.width/2 &&
      user.y + user.size/2 < object.y + object.height/2 && user.y - user.size /2 > object.y - object.height/2){
@@ -215,7 +279,9 @@ function checkCollision(object){
   }
 }
 
-//
+//===================================================================================================================================
+// pippin's snipet for displaying static (the moving stars)
+//===================================================================================================================================
 function displayMovingStars(){
   for(let i = 0; i < 500; i++){
     let starX = random(0, windowWidth);
@@ -225,7 +291,111 @@ function displayMovingStars(){
   }
 }
 
-//display object information pannel
+//===================================================================================================================================
+// contains the alien spaceship behavior for crossing the screen and playing its music at a preset interval
+//===================================================================================================================================
+function alienShipBehavior() {
+  if(!hasSoundPlayed){
+    alienThemeSound.setVolume(0.7);
+    alienThemeSound.play();
+    hasSoundPlayed = true;
+  }
+
+  if(alienShip.x > windowWidth){
+    isAlienShipAppear = false;
+    hasSoundPlayed = false;
+  }
+
+  alienShip.x += alienShip.vx;
+  alienShip.y += alienShip.vy;
+  drawImage(alienShipImg, alienShip.x, alienShip.y, alienShip.size, alienShip.size);
+}
+
+//===================================================================================================================================
+// displays the upset alien who will give you the choice to either continue or end the game
+//===================================================================================================================================
+let goodChoiceBtn;
+let badChoiceBtn;
+
+function alienOptionDialog(){
+  //display alien boi sprite
+  drawImage(alienBoiImg, windowWidth/2, windowHeight/2, 800, windowHeight);
+
+  //display dialog box and choices
+  fill('#e4e6eb');
+  rectMode(CENTER);
+  rect(windowWidth/2, windowHeight/2 + 300, 1300, 200);
+  push();
+  translate(windowWidth/2 - 1300/2 + 60, windowHeight/2 + 300/2);
+  textStyle(NORMAL);
+  textSize(30);
+  fill('#003566');
+  text('You appear to have inconvenienced me with your fly machine. I am displeased.', 0, 100);
+  text('What say you in your defense?', 0, 150);
+  pop();
+
+  goodChoiceBtn = createButton('good');
+  goodChoiceBtn.position(windowWidth/2 - 100, windowHeight/2 + 350, "fixed");
+  goodChoiceBtn.mousePressed(() => {gameState = 3});
+
+  badChoiceBtn = createButton('bad');
+  badChoiceBtn.position(windowWidth/2 + 100, windowHeight/2 + 350, "fixed");
+  badChoiceBtn.mousePressed(() => {gameState = 4});
+
+}
+
+//===================================================================================================================================
+// contains logic for apeasing the alien and continuing the game
+//===================================================================================================================================
+function continueExploration(){
+  goodChoiceBtn.remove();
+  badChoiceBtn.remove();
+  drawImage(alienBoiGoodImg, windowWidth/2, windowHeight/2, 500, windowHeight);
+
+  //display dialog box and choices
+  fill('#e4e6eb');
+  rectMode(CENTER);
+  rect(windowWidth/2, windowHeight/2 + 300, 1300, 200);
+  push();
+  translate(windowWidth/2, windowHeight/2 + 300/2);
+  textStyle(NORMAL);
+  textSize(30);
+  fill('#003566');
+  text('Alright then, you may continue! Safe travels!', 0, 100);
+  pop();
+
+  let doneBtn = createButton('Goodbye!');
+  doneBtn.position(windowWidth/2, windowHeight/2 + 350, "fixed");
+  doneBtn.mousePressed(() => {gameState = 1});
+  doneBtn.remove();
+}
+
+//===================================================================================================================================
+// contains logic for apeasing the alien and continuing the game
+//===================================================================================================================================
+function gameOver(){
+  goodChoiceBtn.remove();
+  badChoiceBtn.remove();
+  drawImage(alienBoiBadImg, windowWidth/2, windowHeight/2, 800, windowHeight);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//===================================================================================================================================
+// display object information card
+//===================================================================================================================================
 function displayInformation(objectName){
   if(mouseIsPressed){
     fill('#e4e6eb');
@@ -233,6 +403,7 @@ function displayInformation(objectName){
     rect(windowWidth/2, windowHeight/2, 400, 700);
 
     push();
+    //bring a new temporary origin to the corner of the just drawn box and add a small margin
     translate((windowWidth/2 - 400/2 + 20),(windowHeight/2 - 700/2 + 60));
     //========================================================================== GALAXY TEXT
     if(objectName === "galaxy"){
@@ -340,42 +511,3 @@ function displayInformation(objectName){
   }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//
