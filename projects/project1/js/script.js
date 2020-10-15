@@ -9,6 +9,7 @@ If you come in contact with the aliens, they will give you a choice
   1) you can apologize and continue your journey
   2) you can be aggressive and they will kill you, end of the game -> reloads the game
 **************************************************/
+"use strict";
 
 let user = {
   x: 1000,
