@@ -146,7 +146,6 @@ function setup() {
   gameThemeSound.loop();
 
   noStroke();
-  noCursor();
 }
 
 
