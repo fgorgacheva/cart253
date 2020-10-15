@@ -11,8 +11,8 @@ If you come in contact with the aliens, they will give you a choice
 **************************************************/
 
 let user = {
-  x: 0,
-  y: 0,
+  x: 1000,
+  y: 1000,
   size: 100,
   ease: 0.08
 }
@@ -106,6 +106,7 @@ let imageArray;
 let isAlienShipAppear;
 let hasSoundPlayed = false;
 let gameState = 0;
+let isEncounterWithAlienOver = false;
 
 function preload() {
   userImg         = loadImage('assets/images/spaceship.png');
@@ -234,10 +235,13 @@ function game() {
   }
 
   //check to see if the alien ship has been intercepted, if it has launch the next game state
-  let distance = dist(user.x, user.y, alienShip.x, alienShip.y);
-  if (distance < user.size / 2 + alienShip.size / 2) {
-    //alien interception
-    gameState = 2;
+  if(!isEncounterWithAlienOver){
+    let distance = dist(user.x, user.y, alienShip.x, alienShip.y);
+    if (distance < user.size / 2 + alienShip.size / 2 && gameState != 2) {
+      //alien interception
+      gameState = 2;
+      isEncounterWithAlienOver = true;
+    }
   }
 
   userBehavior();
@@ -351,6 +355,7 @@ let goodChoiceBtn;
 let badChoiceBtn;
 
 function alienOptionDialog(){
+  console.log("call", gameState);
   //display alien boi sprite
   drawImage(alienBoiImg, windowWidth/2, windowHeight/2, 800, windowHeight);
 
@@ -399,13 +404,15 @@ function continueExploration(){
   pop();
 
   let doneBtn = createButton('Goodbye!');
-  doneBtn.position(windowWidth/2, windowHeight/2 + 350);
+  doneBtn.position(windowWidth/2, windowHeight/2 + 325);
   doneBtn.mousePressed(() => {
-    console.log("before: " + gameState);
     gameState = 1;
-    console.log("after: " +gameState);
     removeElements();
   });
+
+  setTimeout(() => {
+    isEncounterWithAlienOver = false;
+  }, 15 * 1000);
 }
 
 //===================================================================================================================================
