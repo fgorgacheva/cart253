@@ -50,7 +50,7 @@ let blackHole = {
 
 let nebula = {
   name: "nebula",
-  x: 1300,
+  x: 1400,
   y: 200,
   width: 300,
   height: 300,
@@ -98,6 +98,7 @@ let engineStartSound;
 let engineOffSound;
 let gameThemeSound;
 let alienThemeSound;
+let explosionSound;
 
 let rotationVar = 0;
 let objectArray;
@@ -125,6 +126,7 @@ function preload() {
   engineOffSound   = loadSound('assets/sounds/banshee off.mp3');
   gameThemeSound   = loadSound('assets/sounds/Hans Zimmer - No Time For Caution.mp3');
   alienThemeSound  = loadSound('assets/sounds/xFiles.mp3');
+  explosionSound   = loadSound('assets/sounds/explosion.mp3');
 }
 
 // setup()
@@ -132,14 +134,13 @@ function preload() {
 // Description of setup() goes here.
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  noStroke();
-  //noCursor();
+
   setInterval(() => {
     isAlienShipAppear = true;
     alienShip.x = 0 - alienShip.size;
     alienShip.y = random(0, windowHeight);
     alienShip.vx = alienShip.speed;
-  }, 10 * 1000);
+  }, 40 * 1000);
   user.x = windowWidth/2;
   user.y = windowHeight/2;
 
@@ -148,6 +149,9 @@ function setup() {
 
   gameThemeSound.setVolume(0.3);
   gameThemeSound.loop();
+
+  noStroke();
+  //noCursor();
 }
 
 
@@ -156,6 +160,7 @@ function setup() {
 // Description of draw() goes here.
 function draw() {
   background(spaceImg);
+  displayMovingStars();
   switch(gameState){
     case 0: //title screen
       title();
@@ -177,21 +182,43 @@ function draw() {
       gameOver();
       break;
   }
-
 }
 
 function title() {
-  gameState = 1;
+  background('black');
+  displayMovingStars();
+  noStroke();
+
+  fill('#ff52f3');
+  textSize(100);
+  text('Welcome to the Space Exploration game!', 25, 150);
+
+  fill('white');
+  textSize(20);
+  textAlign(LEFT);
+  text('- Use your mouse to control the floating spaceship.', 250, 250);
+  text('- Press and hold your left mouse button when you hover over a celestial object to learn more about it.', 250, 350);
+  text('** Be careful about the alien spaceship cruising through the cosmos! They might not be so happy about bumping into you! **', 250, 450);
+
+  fill('red');
+  textSize(50);
+  text('Hit your space bar to start the game!', windowWidth/2 - 400, 750);
+
 }
 
+function keyTyped(){
+  if(keyCode === 32 && gameState === 0){
+    engineStartSound.setVolume(0.1);
+    engineStartSound.play();
+    gameState = 1;
+  }
+  return false;
+}
 
 //===================================================================================================================================
 // overall game logic
 //===================================================================================================================================
 function game() {
-  background(spaceImg);
-  displayMovingStars();
-
   //Place, draw, and rotate every cosmic object
   objectArray.forEach((object, i) => {
     cosmicRotation(imageArray[i], object);
@@ -296,14 +323,16 @@ function displayMovingStars(){
 //===================================================================================================================================
 function alienShipBehavior() {
   if(!hasSoundPlayed){
+    gameThemeSound.setVolume(0.1);
     alienThemeSound.setVolume(0.7);
     alienThemeSound.play();
     hasSoundPlayed = true;
   }
 
-  if(alienShip.x > windowWidth){
+  if(alienShip.x > windowWidth + 100){
     isAlienShipAppear = false;
     hasSoundPlayed = false;
+    gameThemeSound.setVolume(0.3);
   }
 
   alienShip.x += alienShip.vx;
@@ -326,20 +355,21 @@ function alienOptionDialog(){
   rectMode(CENTER);
   rect(windowWidth/2, windowHeight/2 + 300, 1300, 200);
   push();
-  translate(windowWidth/2 - 1300/2 + 60, windowHeight/2 + 300/2);
+  translate(windowWidth/2, windowHeight/2 + 300/2);
   textStyle(NORMAL);
+  textAlign(CENTER);
   textSize(30);
   fill('#003566');
   text('You appear to have inconvenienced me with your fly machine. I am displeased.', 0, 100);
   text('What say you in your defense?', 0, 150);
   pop();
 
-  goodChoiceBtn = createButton('good');
-  goodChoiceBtn.position(windowWidth/2 - 100, windowHeight/2 + 350, "fixed");
+  goodChoiceBtn = createButton('I am so sorry! I will be careful next time!');
+  goodChoiceBtn.position(windowWidth/2 - 220, windowHeight/2 + 350);
   goodChoiceBtn.mousePressed(() => {gameState = 3});
 
-  badChoiceBtn = createButton('bad');
-  badChoiceBtn.position(windowWidth/2 + 100, windowHeight/2 + 350, "fixed");
+  badChoiceBtn = createButton('I did it on purpose!');
+  badChoiceBtn.position(windowWidth/2 + 80, windowHeight/2 + 350);
   badChoiceBtn.mousePressed(() => {gameState = 4});
 
 }
@@ -359,13 +389,14 @@ function continueExploration(){
   push();
   translate(windowWidth/2, windowHeight/2 + 300/2);
   textStyle(NORMAL);
+  textAlign(CENTER);
   textSize(30);
   fill('#003566');
-  text('Alright then, you may continue! Safe travels!', 0, 100);
+  text('Alright then, you may continue! Safe travels!', 0, 150);
   pop();
 
   let doneBtn = createButton('Goodbye!');
-  doneBtn.position(windowWidth/2, windowHeight/2 + 350, "fixed");
+  doneBtn.position(windowWidth/2, windowHeight/2 + 350);
   doneBtn.mousePressed(() => {gameState = 1});
   doneBtn.remove();
 }
@@ -377,6 +408,29 @@ function gameOver(){
   goodChoiceBtn.remove();
   badChoiceBtn.remove();
   drawImage(alienBoiBadImg, windowWidth/2, windowHeight/2, 800, windowHeight);
+
+  //display dialog box and choices
+  fill('#e4e6eb');
+  rectMode(CENTER);
+  rect(windowWidth/2, windowHeight/2 + 300, 1300, 200);
+  push();
+  translate(windowWidth/2, windowHeight/2 + 300/2);
+  textStyle(NORMAL);
+  textAlign(CENTER);
+  textSize(30);
+  fill('#003566');
+  text('So, you have chosen.... ANNIHILATIOOOOOOON!!!!', 0, 150);
+  pop();
+
+  let doneBtn = createButton('OH NOOOO!');
+  doneBtn.position(windowWidth/2, windowHeight/2 + 350);
+  doneBtn.mousePressed(() => {
+    gameState = 4;
+    explosionSound.setVolume(0.7);
+    explosionSound.play();
+  });
+  doneBtn.remove();
+
 }
 
 
