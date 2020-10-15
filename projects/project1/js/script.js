@@ -109,25 +109,25 @@ let gameState = 0;
 let isEncounterWithAlienOver = false;
 
 function preload() {
-  userImg         = loadImage('assets/images/spaceship.png');
-  alienBoiImg     = loadImage('assets/images/alienboi unhappy.png');
+  userImg = loadImage('assets/images/spaceship.png');
+  alienBoiImg = loadImage('assets/images/alienboi unhappy.png');
   alienBoiGoodImg = loadImage('assets/images/alienboi good.png');
-  alienBoiBadImg  = loadImage('assets/images/alienboi bad.png');
-  alienShipImg    = loadImage('assets/images/alienship.png');
-  galaxyImg       = loadImage('assets/images/galaxy.png');
-  blackHoleImg    = loadImage('assets/images/blackhole.png');
-  nebulaImg       = loadImage('assets/images/nebula.png');
-  pulsarImg       = loadImage('assets/images/pulsar.png');
-  sunImg          = loadImage('assets/images/sun.png');
-  solarSystemImg  = loadImage('assets/images/solar system.jpg');
-  spaceImg        = loadImage('assets/images/background.jpg');
+  alienBoiBadImg = loadImage('assets/images/alienboi bad.png');
+  alienShipImg = loadImage('assets/images/alienship.png');
+  galaxyImg = loadImage('assets/images/galaxy.png');
+  blackHoleImg = loadImage('assets/images/blackhole.png');
+  nebulaImg = loadImage('assets/images/nebula.png');
+  pulsarImg = loadImage('assets/images/pulsar.png');
+  sunImg = loadImage('assets/images/sun.png');
+  solarSystemImg = loadImage('assets/images/solar system.jpg');
+  spaceImg = loadImage('assets/images/background.jpg');
 
   soundFormats('mp3');
   engineStartSound = loadSound('assets/sounds/banshee on.mp3');
-  engineOffSound   = loadSound('assets/sounds/banshee off.mp3');
-  gameThemeSound   = loadSound('assets/sounds/Halo 3 OST - Luck.mp3');
-  alienThemeSound  = loadSound('assets/sounds/xFiles.mp3');
-  explosionSound   = loadSound('assets/sounds/explosion.mp3');
+  engineOffSound = loadSound('assets/sounds/banshee off.mp3');
+  gameThemeSound = loadSound('assets/sounds/Halo 3 OST - Luck.mp3');
+  alienThemeSound = loadSound('assets/sounds/xFiles.mp3');
+  explosionSound = loadSound('assets/sounds/explosion.mp3');
 }
 
 // setup()
@@ -136,11 +136,11 @@ function preload() {
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
-  user.x = windowWidth/2;
-  user.y = windowHeight/2;
+  user.x = windowWidth / 2;
+  user.y = windowHeight / 2;
 
-  objectArray = [galaxy,    blackHole,    nebula,    pulsar];
-  imageArray  = [galaxyImg, blackHoleImg, nebulaImg, pulsarImg];
+  objectArray = [galaxy, blackHole, nebula, pulsar];
+  imageArray = [galaxyImg, blackHoleImg, nebulaImg, pulsarImg];
 
   gameThemeSound.setVolume(0.3);
   gameThemeSound.loop();
@@ -156,7 +156,7 @@ function setup() {
 function draw() {
   background(spaceImg);
   displayMovingStars();
-  switch(gameState){
+  switch (gameState) {
     case 0: //title screen
       title();
       break;
@@ -173,8 +173,12 @@ function draw() {
       continueExploration();
       break;
 
-    case 4: //game over
-      gameOver();
+    case 4: //angry alien
+      endExploration();
+      break;
+
+    case 5: //game over screen
+      endScreen();
       break;
   }
 }
@@ -197,12 +201,12 @@ function title() {
 
   fill('red');
   textSize(50);
-  text('Hit your space bar to start the game!', windowWidth/2 - 400, 750);
+  text('Hit your space bar to start the game!', windowWidth / 2 - 400, 750);
 
 }
 
-function keyTyped(){
-  if(keyCode === 32 && gameState === 0){
+function keyTyped() {
+  if (keyCode === 32 && gameState === 0) {
     engineStartSound.setVolume(0.2);
     engineStartSound.play();
 
@@ -230,12 +234,12 @@ function game() {
   });
 
   //check if it is time to spawn the alien ship and call its behavior
-  if(isAlienShipAppear){
+  if (isAlienShipAppear) {
     alienShipBehavior();
   }
 
   //check to see if the alien ship has been intercepted, if it has launch the next game state
-  if(!isEncounterWithAlienOver){
+  if (!isEncounterWithAlienOver) {
     let distance = dist(user.x, user.y, alienShip.x, alienShip.y);
     if (distance < user.size / 2 + alienShip.size / 2 && gameState != 2) {
       //alien interception
@@ -265,7 +269,7 @@ function userBehavior() {
 //===================================================================================================================================
 // this will draw an image from its center coordinates rather than the corner, and put it back to corner right after
 //===================================================================================================================================
-function drawImage(img, x, y, w, h){
+function drawImage(img, x, y, w, h) {
   imageMode(CENTER);
   image(img, x, y, w, h);
   imageMode(CORNER);
@@ -274,24 +278,23 @@ function drawImage(img, x, y, w, h){
 //===================================================================================================================================
 // draws the celestial objects and defines their rotating behavior
 //===================================================================================================================================
-function cosmicRotation(img, object){
+function cosmicRotation(img, object) {
   object.rotation += object.rotationSpeed;
   push();
-  if(checkCollision(object)){
+  if (checkCollision(object)) {
     translate(object.x, object.y);
     rotate(object.rotation);
     drawImage(img, 0, 0, object.width * 1.2, object.height * 1.2);
-    if(object.name === "galaxy"){
+    if (object.name === "galaxy") {
       drawImage(sunImg, 100, 100, sun.width * 1.1, sun.height * 1.1);
     }
     pop();
     displayInformation(object.name);
-  }
-  else {
+  } else {
     translate(object.x, object.y);
     rotate(object.rotation);
     drawImage(img, 0, 0, object.width, object.height);
-    if(object.name === "galaxy"){
+    if (object.name === "galaxy") {
       drawImage(sunImg, 100, 100, sun.width, sun.height);
     }
     pop();
@@ -302,13 +305,12 @@ function cosmicRotation(img, object){
 //===================================================================================================================================
 //check if the user is hovering over a celestial object
 //===================================================================================================================================
-function checkCollision(object){
-  if(user.x + user.size/2 < object.x + object.width/2 && user.x - user.size /2 > object.x - object.width/2 &&
-     user.y + user.size/2 < object.y + object.height/2 && user.y - user.size /2 > object.y - object.height/2){
-        object.collision = true;
-        return true;
-  }
-  else {
+function checkCollision(object) {
+  if (user.x + user.size / 2 < object.x + object.width / 2 && user.x - user.size / 2 > object.x - object.width / 2 &&
+    user.y + user.size / 2 < object.y + object.height / 2 && user.y - user.size / 2 > object.y - object.height / 2) {
+    object.collision = true;
+    return true;
+  } else {
     object.collision = false;
     return false;
   }
@@ -317,8 +319,8 @@ function checkCollision(object){
 //===================================================================================================================================
 // pippin's snipet for displaying static (the moving stars)
 //===================================================================================================================================
-function displayMovingStars(){
-  for(let i = 0; i < 500; i++){
+function displayMovingStars() {
+  for (let i = 0; i < 500; i++) {
     let starX = random(0, windowWidth);
     let starY = random(0, windowHeight);
     stroke(250);
@@ -330,14 +332,14 @@ function displayMovingStars(){
 // contains the alien spaceship behavior for crossing the screen and playing its music at a preset interval
 //===================================================================================================================================
 function alienShipBehavior() {
-  if(!hasSoundPlayed){
+  if (!hasSoundPlayed) {
     gameThemeSound.setVolume(0.1);
     alienThemeSound.setVolume(0.7);
     alienThemeSound.play();
     hasSoundPlayed = true;
   }
 
-  if(alienShip.x > windowWidth + 1000){
+  if (alienShip.x > windowWidth + 1000) {
     isAlienShipAppear = false;
     hasSoundPlayed = false;
     gameThemeSound.setVolume(0.3);
@@ -354,17 +356,17 @@ function alienShipBehavior() {
 let goodChoiceBtn;
 let badChoiceBtn;
 
-function alienOptionDialog(){
+function alienOptionDialog() {
   console.log("call", gameState);
   //display alien boi sprite
-  drawImage(alienBoiImg, windowWidth/2, windowHeight/2, 800, windowHeight);
+  drawImage(alienBoiImg, windowWidth / 2, windowHeight / 2, 800, windowHeight);
 
   //display dialog box and choices
   fill('#e4e6eb');
   rectMode(CENTER);
-  rect(windowWidth/2, windowHeight/2 + 300, 1300, 200);
+  rect(windowWidth / 2, windowHeight / 2 + 300, 1300, 200);
   push();
-  translate(windowWidth/2, windowHeight/2 + 300/2);
+  translate(windowWidth / 2, windowHeight / 2 + 300 / 2);
   textStyle(NORMAL);
   textAlign(CENTER);
   textSize(30);
@@ -374,28 +376,33 @@ function alienOptionDialog(){
   pop();
 
   goodChoiceBtn = createButton('I am so sorry! I will be careful next time!');
-  goodChoiceBtn.position(windowWidth/2 - 220, windowHeight/2 + 350);
-  goodChoiceBtn.mousePressed(() => {gameState = 3; removeElements();});
+  goodChoiceBtn.position(windowWidth / 2 - 220, windowHeight / 2 + 350);
+  goodChoiceBtn.mousePressed(() => {
+    gameState = 3;
+    removeElements();
+  });
 
   badChoiceBtn = createButton('I did it on purpose!');
-  badChoiceBtn.position(windowWidth/2 + 80, windowHeight/2 + 350);
-  badChoiceBtn.mousePressed(() => {gameState = 4; removeElements();});
+  badChoiceBtn.position(windowWidth / 2 + 80, windowHeight / 2 + 350);
+  badChoiceBtn.mousePressed(() => {
+    gameState = 4;
+    removeElements();
+  });
 
 }
 
 //===================================================================================================================================
 // contains logic for apeasing the alien and continuing the game
 //===================================================================================================================================
-function continueExploration(){
-  removeElements();
-  drawImage(alienBoiGoodImg, windowWidth/2, windowHeight/2, 500, windowHeight);
+function continueExploration() {
+  drawImage(alienBoiGoodImg, windowWidth / 2, windowHeight / 2, 500, windowHeight);
 
   //display dialog box and choices
   fill('#e4e6eb');
   rectMode(CENTER);
-  rect(windowWidth/2, windowHeight/2 + 300, 1300, 200);
+  rect(windowWidth / 2, windowHeight / 2 + 300, 1300, 200);
   push();
-  translate(windowWidth/2, windowHeight/2 + 300/2);
+  translate(windowWidth / 2, windowHeight / 2 + 300 / 2);
   textStyle(NORMAL);
   textAlign(CENTER);
   textSize(30);
@@ -404,7 +411,7 @@ function continueExploration(){
   pop();
 
   let doneBtn = createButton('Goodbye!');
-  doneBtn.position(windowWidth/2, windowHeight/2 + 325);
+  doneBtn.position(windowWidth / 2, windowHeight / 2 + 325);
   doneBtn.mousePressed(() => {
     gameState = 1;
     removeElements();
@@ -418,67 +425,69 @@ function continueExploration(){
 //===================================================================================================================================
 // contains logic for apeasing the alien and continuing the game
 //===================================================================================================================================
-// function gameOver(){
-//   goodChoiceBtn.remove();
-//   badChoiceBtn.remove();
-//   drawImage(alienBoiBadImg, windowWidth/2, windowHeight/2, 800, windowHeight);
-//
-//   //display dialog box and choices
-//   fill('#e4e6eb');
-//   rectMode(CENTER);
-//   rect(windowWidth/2, windowHeight/2 + 300, 1300, 200);
-//   push();
-//   translate(windowWidth/2, windowHeight/2 + 300/2);
-//   textStyle(NORMAL);
-//   textAlign(CENTER);
-//   textSize(30);
-//   fill('#003566');
-//   text('So, you have chosen.... ANNIHILATIOOOOOOON!!!!', 0, 150);
-//   pop();
-//
-//   let doneBtn = createButton('OH NOOOO!');
-//   doneBtn.position(windowWidth/2, windowHeight/2 + 350);
-//   doneBtn.mousePressed(() => {
-//     gameState = 4;
-//     explosionSound.setVolume(0.7);
-//     explosionSound.play();
-//   });
-//   doneBtn.remove();
-//
-// }
+function endExploration() {
+  drawImage(alienBoiBadImg, windowWidth / 2, windowHeight / 2, 800, windowHeight);
 
+  //display dialog box and choices
+  fill('#e4e6eb');
+  rectMode(CENTER);
+  rect(windowWidth / 2, windowHeight / 2 + 300, 1300, 200);
+  push();
+  translate(windowWidth / 2, windowHeight / 2 + 300 / 2);
+  textStyle(NORMAL);
+  textAlign(CENTER);
+  textSize(30);
+  fill('#003566');
+  text('So, you have chosen.... ANNIHILATIOOOOOOON!!!!', 0, 150);
+  pop();
 
+  let doneBtn = createButton('OH NOOOO!');
+  doneBtn.position(windowWidth / 2, windowHeight / 2 + 350);
+  doneBtn.mousePressed(() => {
+    gameState = 5;
+    explosionSound.setVolume(0.5);
+    explosionSound.play();
+    removeElements();
+  });
 
+}
 
+//===================================================================================================================================
+// display the end screen when the game is over
+//===================================================================================================================================
+function endScreen() {
+  background('black');
+  noStroke();
 
+  textAlign(CENTER);
+  fill('#ff52f3');
+  textSize(100);
+  text('   GAME OVER...', windowWidth / 2, 500);
 
+  fill('red');
+  textSize(25);
+  text('Press F5 to play again', windowWidth / 2, 600);
 
-
-
-
-
-
-
-
+}
 
 //===================================================================================================================================
 // display object information card
 //===================================================================================================================================
-function displayInformation(objectName){
-  if(mouseIsPressed){
+function displayInformation(objectName) {
+  if (mouseIsPressed) {
     fill('#e4e6eb');
     rectMode(CENTER);
-    rect(windowWidth/2, windowHeight/2, 400, 700);
+    rect(windowWidth / 2, windowHeight / 2, 400, 700);
 
     push();
     //bring a new temporary origin to the corner of the just drawn box and add a small margin
-    translate((windowWidth/2 - 400/2 + 20),(windowHeight/2 - 700/2 + 60));
+    translate((windowWidth / 2 - 400 / 2 + 20), (windowHeight / 2 - 700 / 2 + 60));
     //========================================================================== GALAXY TEXT
-    if(objectName === "galaxy"){
+    if (objectName === "galaxy") {
       fill('#003566');
       textStyle(BOLD);
       textSize(50);
-      text('GALAXIES',0,0);
+      text('GALAXIES', 0, 0);
 
       textStyle(NORMAL);
       textSize(20);
@@ -498,11 +507,11 @@ function displayInformation(objectName){
       text('  center of our galaxy.', 0, 420);
     }
     //========================================================================== BLACK HOLE TEXT
-    if(objectName === "blackHole"){
+    if (objectName === "blackHole") {
       fill('#003566');
       textStyle(BOLD);
       textSize(50);
-      text('BLACK HOLES',0,0);
+      text('BLACK HOLES', 0, 0);
 
       textStyle(NORMAL);
       textSize(20);
@@ -525,11 +534,11 @@ function displayInformation(objectName){
       text('  horizon.', 0, 500);
     }
     //========================================================================== NEBULA TEXT
-    if(objectName === "nebula"){
+    if (objectName === "nebula") {
       fill('#003566');
       textStyle(BOLD);
       textSize(50);
-      text('NEBULAS',0,0);
+      text('NEBULAS', 0, 0);
 
       textStyle(NORMAL);
       textSize(20);
@@ -549,11 +558,11 @@ function displayInformation(objectName){
       text('  Earth.', 0, 420);
     }
     //========================================================================== PULSAR TEXT
-    if(objectName === "pulsar"){
+    if (objectName === "pulsar") {
       fill('#003566');
       textStyle(BOLD);
       textSize(50);
-      text('PULSARS',0,0);
+      text('PULSARS', 0, 0);
 
       textStyle(NORMAL);
       textSize(20);
