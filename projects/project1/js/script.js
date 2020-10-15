@@ -135,12 +135,6 @@ function preload() {
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
-  setInterval(() => {
-    isAlienShipAppear = true;
-    alienShip.x = 0 - alienShip.size;
-    alienShip.y = random(0, windowHeight);
-    alienShip.vx = alienShip.speed;
-  }, 40 * 1000);
   user.x = windowWidth/2;
   user.y = windowHeight/2;
 
@@ -208,8 +202,16 @@ function title() {
 
 function keyTyped(){
   if(keyCode === 32 && gameState === 0){
-    engineStartSound.setVolume(0.1);
+    engineStartSound.setVolume(0.2);
     engineStartSound.play();
+
+    setInterval(() => {
+      isAlienShipAppear = true;
+      alienShip.x = 0 - alienShip.size;
+      alienShip.y = random(0, windowHeight);
+      alienShip.vx = alienShip.speed;
+    }, 40 * 1000);
+
     gameState = 1;
   }
   return false;
@@ -219,8 +221,8 @@ function keyTyped(){
 // overall game logic
 //===================================================================================================================================
 function game() {
-  //for when the game restarts, elements left from previous playthrough must be removed before resuming the game.
-  removeElements();
+  // //for when the game restarts, elements left from previous playthrough must be removed before resuming the game.
+  // removeElements();
   //Place, draw, and rotate every cosmic object
   objectArray.forEach((object, i) => {
     cosmicRotation(imageArray[i], object);
@@ -331,7 +333,7 @@ function alienShipBehavior() {
     hasSoundPlayed = true;
   }
 
-  if(alienShip.x > windowWidth + 100){
+  if(alienShip.x > windowWidth + 1000){
     isAlienShipAppear = false;
     hasSoundPlayed = false;
     gameThemeSound.setVolume(0.3);
@@ -368,11 +370,11 @@ function alienOptionDialog(){
 
   goodChoiceBtn = createButton('I am so sorry! I will be careful next time!');
   goodChoiceBtn.position(windowWidth/2 - 220, windowHeight/2 + 350);
-  goodChoiceBtn.mousePressed(() => {gameState = 3});
+  goodChoiceBtn.mousePressed(() => {gameState = 3; removeElements();});
 
   badChoiceBtn = createButton('I did it on purpose!');
   badChoiceBtn.position(windowWidth/2 + 80, windowHeight/2 + 350);
-  badChoiceBtn.mousePressed(() => {gameState = 4});
+  badChoiceBtn.mousePressed(() => {gameState = 4; removeElements();});
 
 }
 
@@ -398,7 +400,12 @@ function continueExploration(){
 
   let doneBtn = createButton('Goodbye!');
   doneBtn.position(windowWidth/2, windowHeight/2 + 350);
-  doneBtn.mousePressed(() => {gameState = 1});
+  doneBtn.mousePressed(() => {
+    console.log("before: " + gameState);
+    gameState = 1;
+    console.log("after: " +gameState);
+    removeElements();
+  });
 }
 
 //===================================================================================================================================
