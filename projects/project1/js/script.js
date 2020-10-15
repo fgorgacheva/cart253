@@ -146,7 +146,7 @@ function setup() {
   gameThemeSound.loop();
 
   noStroke();
-  //noCursor();
+  noCursor();
 }
 
 
@@ -241,7 +241,7 @@ function game() {
   //check to see if the alien ship has been intercepted, if it has launch the next game state
   if (!isEncounterWithAlienOver) {
     let distance = dist(user.x, user.y, alienShip.x, alienShip.y);
-    if (distance < user.size / 2 + alienShip.size / 2 && gameState != 2) {
+    if (distance < user.size / 2 + alienShip.size / 2 && gameState != 2 ) {
       //alien interception
       gameState = 2;
       isEncounterWithAlienOver = true;
@@ -528,10 +528,10 @@ function displayInformation(objectName) {
       text('  of no return.', 0, 340);
 
       text('• Even though many researchers have', 0, 390);
-      text('  devoted their life\'s work to black', 0, 410);
-      text('  holes, to this day, we still have no', 0, 440);
-      text('  idea what hides past the event', 0, 470);
-      text('  horizon.', 0, 500);
+      text('  devoted their life\'s work to black', 0, 420);
+      text('  holes, to this day, we still have no', 0, 450);
+      text('  idea what hides past the event', 0, 480);
+      text('  horizon.', 0, 510);
     }
     //========================================================================== NEBULA TEXT
     if (objectName === "nebula") {
