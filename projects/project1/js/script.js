@@ -124,7 +124,7 @@ function preload() {
   soundFormats('mp3');
   engineStartSound = loadSound('assets/sounds/banshee on.mp3');
   engineOffSound   = loadSound('assets/sounds/banshee off.mp3');
-  gameThemeSound   = loadSound('assets/sounds/Hans Zimmer - No Time For Caution.mp3');
+  gameThemeSound   = loadSound('assets/sounds/Halo 3 OST - Luck.mp3');
   alienThemeSound  = loadSound('assets/sounds/xFiles.mp3');
   explosionSound   = loadSound('assets/sounds/explosion.mp3');
 }
@@ -219,6 +219,8 @@ function keyTyped(){
 // overall game logic
 //===================================================================================================================================
 function game() {
+  //for when the game restarts, elements left from previous playthrough must be removed before resuming the game.
+  removeElements();
   //Place, draw, and rotate every cosmic object
   objectArray.forEach((object, i) => {
     cosmicRotation(imageArray[i], object);
@@ -378,8 +380,7 @@ function alienOptionDialog(){
 // contains logic for apeasing the alien and continuing the game
 //===================================================================================================================================
 function continueExploration(){
-  goodChoiceBtn.remove();
-  badChoiceBtn.remove();
+  removeElements();
   drawImage(alienBoiGoodImg, windowWidth/2, windowHeight/2, 500, windowHeight);
 
   //display dialog box and choices
@@ -398,40 +399,39 @@ function continueExploration(){
   let doneBtn = createButton('Goodbye!');
   doneBtn.position(windowWidth/2, windowHeight/2 + 350);
   doneBtn.mousePressed(() => {gameState = 1});
-  doneBtn.remove();
 }
 
 //===================================================================================================================================
 // contains logic for apeasing the alien and continuing the game
 //===================================================================================================================================
-function gameOver(){
-  goodChoiceBtn.remove();
-  badChoiceBtn.remove();
-  drawImage(alienBoiBadImg, windowWidth/2, windowHeight/2, 800, windowHeight);
-
-  //display dialog box and choices
-  fill('#e4e6eb');
-  rectMode(CENTER);
-  rect(windowWidth/2, windowHeight/2 + 300, 1300, 200);
-  push();
-  translate(windowWidth/2, windowHeight/2 + 300/2);
-  textStyle(NORMAL);
-  textAlign(CENTER);
-  textSize(30);
-  fill('#003566');
-  text('So, you have chosen.... ANNIHILATIOOOOOOON!!!!', 0, 150);
-  pop();
-
-  let doneBtn = createButton('OH NOOOO!');
-  doneBtn.position(windowWidth/2, windowHeight/2 + 350);
-  doneBtn.mousePressed(() => {
-    gameState = 4;
-    explosionSound.setVolume(0.7);
-    explosionSound.play();
-  });
-  doneBtn.remove();
-
-}
+// function gameOver(){
+//   goodChoiceBtn.remove();
+//   badChoiceBtn.remove();
+//   drawImage(alienBoiBadImg, windowWidth/2, windowHeight/2, 800, windowHeight);
+//
+//   //display dialog box and choices
+//   fill('#e4e6eb');
+//   rectMode(CENTER);
+//   rect(windowWidth/2, windowHeight/2 + 300, 1300, 200);
+//   push();
+//   translate(windowWidth/2, windowHeight/2 + 300/2);
+//   textStyle(NORMAL);
+//   textAlign(CENTER);
+//   textSize(30);
+//   fill('#003566');
+//   text('So, you have chosen.... ANNIHILATIOOOOOOON!!!!', 0, 150);
+//   pop();
+//
+//   let doneBtn = createButton('OH NOOOO!');
+//   doneBtn.position(windowWidth/2, windowHeight/2 + 350);
+//   doneBtn.mousePressed(() => {
+//     gameState = 4;
+//     explosionSound.setVolume(0.7);
+//     explosionSound.play();
+//   });
+//   doneBtn.remove();
+//
+// }
 
 
 
